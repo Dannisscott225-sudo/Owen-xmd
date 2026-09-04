@@ -1,0 +1,102 @@
+# ⚡ OWEN XMD V1
+
+Bot WhatsApp Multi-Device basé sur [Baileys](https://github.com/WhiskeySockets/Baileys), avec une page web de génération de session (Pair Code + QR Code) et une structure de plugins extensible.
+
+## 📁 Structure du projet
+
+```
+owen-xmd-v1/
+├── index.js              # Démarre le bot WhatsApp (écoute les messages, exécute les commandes)
+├── config.js              # Configuration (nom du bot, préfixe, mode, etc.)
+├── server/
+│   └── app.js              # Serveur web : page de pairing + API /api/pair et /api/qr
+├── public/
+│   ├── index.html           # Page web (front)
+│   ├── css/style.css
+│   └── js/main.js
+├── lib/
+│   ├── myfunc.js             # Fonctions utilitaires (sérialisation des messages)
+│   └── pluginLoader.js       # Charge automatiquement les fichiers dans /plugins
+├── plugins/                  # Toutes les commandes du bot (un fichier = une ou plusieurs commandes)
+│   ├── menu.js
+│   ├── general.js            # ping, owner, runtime
+│   ├── sticker.js
+│   ├── moderation.js         # antilink, kick
+│   ├── welcome.js            # bienvenue/au revoir
+│   ├── games.js              # math, devine
+│   ├── tools.js               # traduire
+│   └── setpp.js               # changer la photo de profil du bot
+├── assets/
+│   └── profile.jpg            # (à ajouter toi-même) photo de profil appliquée au démarrage
+└── session/                   # Générée automatiquement après le pairing (NE PAS PARTAGER)
+```
+
+## 🚀 Installation locale
+
+```bash
+git clone <ton-repo>
+cd owen-xmd-v1
+npm install
+cp .env.example .env
+```
+
+Édite `.env` avec tes infos (nom du bot, numéro propriétaire, etc.).
+
+### Lancer la page de pairing (pour générer ta session)
+
+```bash
+npm run server
+```
+
+Ouvre `http://localhost:3000`, choisis Pair Code ou QR Code, lie ton WhatsApp.
+Une fois connecté, le dossier `session/` est créé automatiquement.
+
+### Lancer le bot
+
+```bash
+npm start
+```
+
+## ☁️ Déploiement sur Railway (comme l'original)
+
+1. Pousse ce projet sur un repo GitHub.
+2. Sur [Railway](https://railway.app), clique **New Project → Deploy from GitHub repo**.
+3. Ajoute les variables d'environnement du `.env.example` dans l'onglet **Variables**.
+4. Railway détecte automatiquement Node.js et lance `npm start`.
+5. Pour exposer la page de pairing, configure le service pour lancer `npm run server` (ou fusionne les deux process avec un `Procfile` / `concurrently` si tu veux page + bot ensemble).
+
+> 💡 Astuce : beaucoup de projets similaires lancent le serveur web et le bot dans le même process. Tu peux modifier `index.js` pour `require('./server/app')` au démarrage si tu veux tout sur un seul service Railway.
+
+## 🖼️ Photo du bot
+
+- **Photo affichée sur la page web** : remplace `public/images/avatar.svg` par ton propre logo (même nom de fichier, ou change le chemin dans `public/index.html`).
+- **Photo de profil du compte WhatsApp** : deux options —
+  1. Place une image dans `assets/profile.jpg` (chemin défini par `BOT_PP` dans `.env`) — elle est appliquée automatiquement à chaque démarrage/connexion.
+  2. Envoie `.setpp` en réponse à une image directement dans WhatsApp (réservé au propriétaire défini par `OWNER_NUMBER`).
+
+## ✏️ Ajouter une commande
+
+Crée un fichier dans `plugins/`, par exemple `plugins/salut.js` :
+
+```js
+module.exports = {
+  command: 'salut',
+  description: 'Dit bonjour',
+  category: 'general',
+  async execute({ m }) {
+    await m.reply('👋 Salut !');
+  },
+};
+```
+
+Redémarre le bot — la commande `.salut` est automatiquement disponible.
+
+## ⚠️ Notes importantes
+
+- **Le dossier `session/` contient les identifiants de connexion à ton compte WhatsApp.** Ne le partage jamais, ne le pousse jamais sur un repo public (`.gitignore` l'exclut déjà).
+- Ce projet n'a pas été testé en conditions réelles dans cet environnement (pas d'accès réseau ici) — teste-le en local avant de déployer, et vérifie la version de `@whiskeysockets/baileys` la plus récente (l'API évolue régulièrement).
+- Respecte les conditions d'utilisation de WhatsApp : évite le spam, les messages non sollicités en masse, etc.
+
+## 📜 Licence
+
+MIT — libre à toi de modifier, distribuer et améliorer ce projet.
