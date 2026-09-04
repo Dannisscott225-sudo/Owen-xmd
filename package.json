@@ -1,0 +1,29 @@
+{
+  "name": "owen-xmd-v1",
+  "version": "1.0.0",
+  "description": "OWEN XMD V1 - WhatsApp Multi-Device Bot & Session Generator",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "server": "node server/app.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Owen",
+  "license": "MIT",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.9",
+    "express": "^4.19.2",
+    "qrcode": "^1.5.3",
+    "pino": "^9.2.0",
+    "dotenv": "^16.4.5",
+    "axios": "^1.7.2",
+    "fs-extra": "^11.2.0",
+    "chalk": "^4.1.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
